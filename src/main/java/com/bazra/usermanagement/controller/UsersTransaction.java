@@ -210,6 +210,29 @@ private Sort.Direction getSortDirection(String direction){
         }
         }
 
+        @GetMapping("TransactionPaged/published")
+    public ResponseEntity<Map<String, Object>> findByPublished(
+                @RequestParam(required = false) String accountNumber,
+                @RequestParam(defaultValue = "0") int page,
+                @RequestParam(defaultValue = "3") int size) {
+        try{
+        List<Transaction>  transactions =new ArrayList<>();
+        Pageable paging = PageRequest.of(page, size);
+
+        Page<Transaction> pageTuts = transactionRepository.findByAccountNumber(accountNumber, paging);
+        transactions = pageTuts.getContent();
+            Map<String, Object> response = new HashMap<>();
+            response.put("tutorials", transactions);
+            response.put("currentPage", pageTuts.getNumber());
+            response.put("totalTransactions", pageTuts.getTotalElements());
+            response.put("totalPages", pageTuts.getTotalPages());
+
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        }
+
 
 
 }
